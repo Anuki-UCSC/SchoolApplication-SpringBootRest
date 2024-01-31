@@ -73,4 +73,17 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
 
+
+    /**
+     * Handles HTTP DELETE requests to delete a student by ID.
+     *
+     * @param id The ID of the student to delete.
+     * @return ResponseEntity<Long> A ResponseEntity containing the ID of the deleted student and an HTTP status code.
+     * @throws ValidationException If the validation of the deletion process fails.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteStudent(@PathVariable Long id) throws ValidationException {
+        Long response = studentService.deleteStudent(id);
+        return ResponseEntity.ok(response);
+    }
 }

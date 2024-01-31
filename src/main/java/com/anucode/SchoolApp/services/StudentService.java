@@ -49,5 +49,12 @@ public class StudentService {
         return studentRepository.save(modifiedStudent);
     }
 
+    public Long deleteStudent(Long id) throws ValidationException {
+        Student deletingStudent = studentRepository.findById(id)
+                .orElseThrow(()-> new ValidationException("given id is invalid."));
+        studentRepository.deleteById(id);
+        return id;
+    }
+
 
 }
