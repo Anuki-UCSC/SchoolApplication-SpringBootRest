@@ -23,9 +23,9 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Student getStudentById(Long id) throws ResourceNotFoundException {
+    public Student getStudentById(Long id) throws ValidationException {
         return studentRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Student not available for given id"));
+                .orElseThrow(()-> new ValidationException("given id is invalid."));
     }
 
     public Student saveStudent(Student student) throws ValidationException {
@@ -39,6 +39,15 @@ public class StudentService {
         return student;
     }
 
+    public Student updateStudent(Long id, Student student) throws ValidationException {
+        Student modifiedStudent = studentRepository.findById(id)
+                .orElseThrow(()-> new ValidationException("given id is invalid."));
+        modifiedStudent.setFirstName(student.getFirstName());
+        modifiedStudent.setLastName(student.getLastName());
+        modifiedStudent.setAddress(student.getAddress());
+        modifiedStudent.setDateOfBirth(student.getDateOfBirth());
+        return studentRepository.save(modifiedStudent);
+    }
 
 
 }
