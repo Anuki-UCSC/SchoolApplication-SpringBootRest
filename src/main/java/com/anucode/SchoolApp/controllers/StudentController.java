@@ -18,7 +18,7 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    
+
     /**
      * Handles HTTP GET requests to retrieve all students.
      *
@@ -39,7 +39,7 @@ public class StudentController {
      * @throws ResourceNotFoundException If the student with the given ID is not found.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<Student> getStudentById(@PathVariable Long id) throws ValidationException {
         Student student = studentService.getStudentById(id);
         return ResponseEntity.ok(student);
     }
@@ -58,5 +58,19 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
 
+
+    /**
+     * Handles HTTP PUT requests to update a student by ID.
+     *
+     * @param id      The ID of the student to update.
+     * @param student The updated student object, obtained from the request body.
+     * @return ResponseEntity<Student> A ResponseEntity containing the updated student object and an HTTP status code.
+     * @throws ValidationException If the student data is invalid or validation fails.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student student) throws ValidationException {
+        Student response = studentService.updateStudent(id, student);
+        return ResponseEntity.ok(response);
+    }
 
 }
