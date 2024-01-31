@@ -1,6 +1,7 @@
 package com.anucode.SchoolApp.services;
 
 
+import com.anucode.SchoolApp.exceptions.ResourceNotFoundException;
 import com.anucode.SchoolApp.exceptions.ValidationException;
 import com.anucode.SchoolApp.models.Student;
 import com.anucode.SchoolApp.repositories.StudentRepository;
@@ -16,6 +17,16 @@ public class StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+
+    public List<Student> getAllStudents(){
+        return studentRepository.findAll();
+    }
+
+    public Student getStudentById(Long id) throws ResourceNotFoundException {
+        return studentRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Student not available for given id"));
+    }
 
     public Student saveStudent(Student student) throws ValidationException {
         try {

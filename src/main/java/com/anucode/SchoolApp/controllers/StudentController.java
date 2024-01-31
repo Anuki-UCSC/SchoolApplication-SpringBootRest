@@ -9,12 +9,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    
+    /**
+     * Handles HTTP GET requests to retrieve all students.
+     *
+     * @return ResponseEntity<List<Student>> A ResponseEntity containing a list of all students and an HTTP status code.
+     */
+    @GetMapping()
+    public ResponseEntity<List<Student>> getAll(){
+        List<Student> studentList = studentService.getAllStudents();
+        return ResponseEntity.ok(studentList);
+    }
+
+
+    /**
+     * Handles HTTP GET requests to retrieve a student by ID.
+     *
+     * @param id The ID of the student to retrieve.
+     * @return ResponseEntity<Student> A ResponseEntity containing the student with the specified ID and an HTTP status code.
+     * @throws ResourceNotFoundException If the student with the given ID is not found.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Student> getStudentById(@PathVariable Long id) throws ResourceNotFoundException {
+        Student student = studentService.getStudentById(id);
+        return ResponseEntity.ok(student);
+    }
 
 
     /**
@@ -30,5 +58,5 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
 
-    
+
 }
