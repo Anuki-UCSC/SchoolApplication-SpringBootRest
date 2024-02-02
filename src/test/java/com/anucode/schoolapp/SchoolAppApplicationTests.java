@@ -1,4 +1,4 @@
-package com.anucode.SchoolApp;
+package com.anucode.schoolapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
