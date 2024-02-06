@@ -5,6 +5,7 @@ import com.anucode.schoolapp.dto.requestDto.StudentRequestDTO;
 import com.anucode.schoolapp.dto.responseDto.StudentResponseDTO;
 import com.anucode.schoolapp.exceptions.ResourceNotFoundException;
 import com.anucode.schoolapp.exceptions.StudentIdInvalidException;
+import com.anucode.schoolapp.exceptions.StudentNameAlreadyExistsException;
 import com.anucode.schoolapp.services.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class StudentController {
      * @throws StudentIdInvalidException if the provided student data is not valid.
      */
     @PostMapping()
-    public ResponseEntity<Long> saveStudent(@RequestBody @Valid StudentRequestDTO student) throws StudentIdInvalidException {
+    public ResponseEntity<Long> saveStudent(@RequestBody @Valid StudentRequestDTO student) throws StudentNameAlreadyExistsException {
         Long id = studentService.saveStudent(student);
         return ResponseEntity.ok(id);
     }
