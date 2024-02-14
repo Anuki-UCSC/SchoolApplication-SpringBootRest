@@ -9,11 +9,16 @@ import com.anucode.schoolapp.exceptions.StudentIdInvalidException;
 import com.anucode.schoolapp.exceptions.StudentNameAlreadyExistsException;
 import com.anucode.schoolapp.models.Student;
 import com.anucode.schoolapp.repositories.StudentRepository;
+import com.anucode.schoolapp.specifications.StudentSpecification;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class StudentService {
@@ -118,5 +123,24 @@ public Long saveStudent(StudentRequestDTO studentRequestDTO) throws StudentNameA
         return id;
     }
 
+    public List<StudentResponseDTO> searchStudent(String[] keywordsArray) {
+        List<Student> students;
+        Specification<Student> specification = new StudentSpecification(keywordsArray);
+        students = studentRepository.findAll(specification);
+
+        return mapStudentsToDTOs(students);
+    }
+
+    private List<StudentResponseDTO> mapStudentsToDTOs(List<Student> students) {
+        return students.stream()
+                .map(student -> new StudentResponseDTO(
+                        student.getId(),
+                        student.getFirstName(),
+                        student.getLastName(),
+                        student.getDateOfBirth(),
+                        student.getAddress()
+                ))
+                .collect(Collectors.toList());
+    }
 
 }

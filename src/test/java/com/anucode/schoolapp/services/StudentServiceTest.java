@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -206,4 +207,37 @@ class StudentServiceTest {
     }
 
 
+    @Test
+    void Should_ReturnListOfStudentResponseDTO_WhenGivenSearchStringsArrayContainsInRecords() throws ParseException {
+        //given
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String[] stringArray = {"Anuki", "Alwis" };
+
+        List<Student> searchResult = new ArrayList<>();
+        searchResult.add(new Student(1L,"Anuki", "Alwis",dateFormat.parse("2000-01-11"),"Colombo"));
+
+
+        //when
+        when(studentRepository.findAll((Specification<Student>) any())).thenReturn(searchResult);
+        List<StudentResponseDTO> actualOutput = underTest.searchStudent(stringArray);
+
+        //then
+        assertEquals(1, actualOutput.size());
+    }
+
+    @Test
+    void Should_ReturnEmptyList_WhenSearchStringsNotContainsInRecords() throws ParseException {
+        //given
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String[] stringArray = {"Anuki", "Alwis" };
+
+        List<Student> searchResult = new ArrayList<>();
+
+        //when
+        when(studentRepository.findAll((Specification<Student>) any())).thenReturn(searchResult);
+        List<StudentResponseDTO> actualOutput = underTest.searchStudent(stringArray);
+
+        //then
+        assertEquals(0, actualOutput.size());
+    }
 };

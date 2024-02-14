@@ -8,6 +8,7 @@ import com.anucode.schoolapp.models.Student;
 import com.anucode.schoolapp.services.StudentService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ class StudentControllerTest {
     private StudentResponseDTO studentResponseDTO;
 
     @Test
+    @DisplayName("Student Save - Happy Path")
     public void Should_ReturnStatusOk_When_GivenValidStudent() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         studentRequestDTO = new StudentRequestDTO("Anna", "Johns", dateFormat.parse("2000-05-05"),"Colombo");
@@ -64,6 +66,7 @@ class StudentControllerTest {
 
 
     @Test
+    @DisplayName("Student Save - Fail Case 1")
     public void Should_SaveReturnStatusBadRequest_When_GivenStudentWithMissingField() throws Exception {
             mockMvc.perform(MockMvcRequestBuilders.post("/users")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -79,6 +82,7 @@ class StudentControllerTest {
     }
 
     @Test
+    @DisplayName("Student Save - Fail Case 2")
     public void Should_SaveReturnStatusBadRequest_When_GivenStudentWithMultipleMissingFields() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,6 +99,7 @@ class StudentControllerTest {
 
 
     @Test
+    @DisplayName("Student Update - Happy Path")
     public void Should_UpdateReturnStatusOk_When_GivenStudentUpdate() throws Exception {
         int id =1;
         mockMvc.perform(MockMvcRequestBuilders.put("/users/{id}", id)
@@ -110,6 +115,7 @@ class StudentControllerTest {
     }
 
     @Test
+    @DisplayName("Student Update - Fail Case 1")
     public void Should_UpdateReturnStatusBadRequest_When_GivenStudentWithMissingField() throws Exception {
         //given
         Long id =-2L; //Negative value for Id
@@ -133,6 +139,7 @@ class StudentControllerTest {
 
 
     @Test
+    @DisplayName("Student GetAll - Happy Path")
     public void Should_GetAllReturnStudentResponseDTOList_When_Call() throws Exception {
         //given
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -170,6 +177,7 @@ class StudentControllerTest {
 
 
     @Test
+    @DisplayName("Student GetAll - Fail Case 1")
     public void Should_GetAllReturnEmptyStudentResponseDTOList_When_NoRecords() throws Exception {
         List<StudentResponseDTO> list = new ArrayList<StudentResponseDTO>();
 
@@ -184,6 +192,7 @@ class StudentControllerTest {
     }
 
     @Test
+    @DisplayName("Student GetById - Happy Path")
     public void Should_GetByIdReturnsStudentResponseDTO_When_GivenExistingId() throws Exception {
         //given
         Long id = 1L;
@@ -210,6 +219,7 @@ class StudentControllerTest {
     }
 
     @Test
+    @DisplayName("Student GetById - Fail Case 1")
     public void Should_GetByIdThrowsResourceNotFoundException_When_GivenNonExistingId() throws Exception {
         //given
         Long id = 3003L;
@@ -224,6 +234,7 @@ class StudentControllerTest {
 
 
     @Test
+    @DisplayName("Student Delete - Happy Path")
     public void Should_DeleteByIdReturnId_When_SuccessfulDeletion() throws Exception {
         //given
         Long id =1L;
@@ -239,6 +250,7 @@ class StudentControllerTest {
     }
 
     @Test
+    @DisplayName("Student Delete - Fail Case 1")
     public void Should_DeleteByIdThrowsStudentIdInvalidException_When_GivenInvalidId() throws Exception {
         //given
         Long id =2221L;
@@ -252,4 +264,42 @@ class StudentControllerTest {
     }
 
 
+    @Test
+    public void Should_SearchedReturnListOfStudentResponseDTOWithStatus200_When_GivenMultipleText() throws Exception {
+        String searchText = "Anuki Alwis";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<StudentResponseDTO> responseDTOlist = new ArrayList<StudentResponseDTO>();
+        responseDTOlist.add(new StudentResponseDTO(1L,"Anuki", "Alwis",dateFormat.parse("2000-01-11"),"Colombo"));
+        String expectedJson = """
+                [
+                    {
+                        "id": 1,
+                        "firstName": "Anuki",
+                        "lastName": "Alwis",
+                        "dateOfBirth": "2000-01-10T18:00:00.000+00:00",
+                        "address": "Colombo"
+                    }
+                ]""";
+
+        //when
+        String[] keywordsArray = searchText.split("\\s+");
+        when(studentService.searchStudent(keywordsArray)).thenReturn(responseDTOlist);
+
+        //when, then
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/search?keywords={searchText}",searchText))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
+    }
+
+
+    @Test
+    @DisplayName("Student Search - Fail Case 1") // Status200 ,with all student details
+    public void Should_SearchedReturnWithStatus200_When_GivenNotGivenPathVariables() throws Exception {
+
+        //when, then
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/search?keywords="))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
 }

@@ -6,13 +6,18 @@ import com.anucode.schoolapp.dto.responseDto.StudentResponseDTO;
 import com.anucode.schoolapp.exceptions.ResourceNotFoundException;
 import com.anucode.schoolapp.exceptions.StudentIdInvalidException;
 import com.anucode.schoolapp.exceptions.StudentNameAlreadyExistsException;
+import com.anucode.schoolapp.models.Student;
 import com.anucode.schoolapp.services.StudentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
 
 @RestController
 @RequestMapping("/users")
@@ -87,5 +92,19 @@ public class StudentController {
     public ResponseEntity<Long> deleteStudent(@PathVariable @Valid Long id) throws StudentIdInvalidException {
         Long response = studentService.deleteStudent(id);
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<List<StudentResponseDTO>> searchStudent(@RequestParam(required = false) String keywords){
+        List<StudentResponseDTO> studentList;
+
+        if(keywords==null || keywords.isEmpty()){
+            studentList = studentService.getAllStudents();
+        }else{
+            String[] keywordsArray = keywords.split("\\s+");
+            studentList = studentService.searchStudent(keywordsArray);
+        }
+        return ResponseEntity.ok(studentList);
     }
 }
