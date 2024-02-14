@@ -6,6 +6,7 @@ import com.anucode.schoolapp.dto.responseDto.StudentResponseDTO;
 
 import com.anucode.schoolapp.exceptions.ResourceNotFoundException;
 import com.anucode.schoolapp.exceptions.StudentIdInvalidException;
+import com.anucode.schoolapp.exceptions.StudentNameAlreadyExistsException;
 import com.anucode.schoolapp.models.Student;
 import com.anucode.schoolapp.repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,13 +67,13 @@ public class StudentService {
      * @return The ID of the newly saved student.
      * @throws StudentIdInvalidException if a student with the same first name and last name already exists.
      */
-    public Long saveStudent(StudentRequestDTO studentRequestDTO) throws StudentIdInvalidException{
+public Long saveStudent(StudentRequestDTO studentRequestDTO) throws StudentNameAlreadyExistsException{
             List<Student> existingStudentList = studentRepository.findByFirstNameAndLastName(
                     studentRequestDTO.getFirstName(),
                     studentRequestDTO.getLastName()
             );
             if(!existingStudentList.isEmpty()){
-                throw new StudentIdInvalidException("firstName and LastName are already available");
+                throw new StudentNameAlreadyExistsException("firstName and LastName are already available");
             }
             Student student = new Student(
                     studentRequestDTO.getFirstName(),
