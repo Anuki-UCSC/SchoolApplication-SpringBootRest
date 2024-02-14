@@ -1,6 +1,10 @@
 package com.anucode.schoolapp.repositories;
 
 import com.anucode.schoolapp.models.Student;
+import com.anucode.schoolapp.specifications.StudentSpecification;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +12,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -155,5 +161,22 @@ class StudentRepositoryTest {
         Student removedStudent = entityManager.find(Student.class, existingStudent.getId());
         assertNull(removedStudent, "Student should be removed from the test database");
     }
+
+    @Test
+    public void Should_SearchTexts_when_GivenSpecification(){
+
+        //given
+        String[] keywordsArray = {"ani", "mika" };
+        Specification<Student> specification = new StudentSpecification(keywordsArray);
+
+        //when
+        List<Student> actualOutput = studentRepository.findAll(specification);
+
+        //then
+        assertEquals(1,actualOutput.size());
+
+    }
+
+
 
 }
