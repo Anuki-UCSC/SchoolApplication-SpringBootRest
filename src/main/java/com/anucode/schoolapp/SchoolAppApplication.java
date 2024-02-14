@@ -1,4 +1,4 @@
-package com.anucode.SchoolApp;
+package com.anucode.schoolapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
